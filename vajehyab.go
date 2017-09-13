@@ -41,7 +41,7 @@ func sendRequest(search string) (VajehyabResponse, error) {
 
 	client := &http.Client{}
 
-	query := fmt.Sprintf("%s/search?token=%s&q=%s&type=exact", BASE_URL, TOKEN, search)
+	query := fmt.Sprintf("%s/search?token=%s&q=%s&type=exact&filter=moein,amid,motaradef,farhangestan,sareh,ganjvajeh,slang,wiki,fa2en,en2fa,ar2fa,fa2ar,name,quran,thesis", BASE_URL, TOKEN, search)
 	req, err := http.NewRequest("GET", query, nil)
 
 	if err != nil {
