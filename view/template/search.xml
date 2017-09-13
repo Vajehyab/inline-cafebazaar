@@ -5,7 +5,7 @@
 		{{if gt .result.NumFound 0}}
 			{{range .result.Results}}
 				<card>	
-					<image style="normal" src="https://inline.zibaei.net/vajehyab.png"/>	
+					<image style="normal" src="https://vajehyab.zibaei.net/static/vajehyab.png"/>	
 					<text>{{.Title}} - <small>{{.Source}}</small></text>
 					<text>{{.Text}}</text>		
 				</card>
