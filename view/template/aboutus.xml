@@ -1,0 +1,20 @@
+{{define "about"}}
+<page gravity="center">
+	<header>درباره ما</header>
+	<text>
+	این برنامه با اجازه رسمی از سایت واژه یاب منتشر شده است	
+	</text>
+	<divider />
+	<text>
+	هم چنین این برنامه به صورت متن باز ارایه شده است ،‌ شما میتوانید در آدرس زیر برنامه را مشاهده فرمایید
+	<br/>
+	سورس برنامه : https://github.com/Vajehyab/inline-cafebazaar
+	<br/>
+	جزییات تیم :‌ https://www.vajehyab.com/about
+	</text>	
+
+	<footer action="">
+		صفحه اصلی
+	</footer>
+</page>
+{{end}}

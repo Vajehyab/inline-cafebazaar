@@ -1,0 +1,22 @@
+{{define "more"}}
+<page gravity="center">
+	<header>بیشتر بدانید</header>
+	
+	<theme background="#424242" text="#ffffff" primary="#212121"/>
+	<image style="normal" src="https://vajehyab.zibaei.net/static/inline-logo.png"/>	
+	<text>
+	این برنامه به صورت یک برنامه آنی توسط کافه بازار ارایه شده است
+	</text>
+	<divider />
+	<text>
+	همچنین با کسب اجازه از سایت واژه یاب ، به صورت متن باز در خدمت کاربران عزیز قرار گرفته است	
+	<br/>
+	برای اطلاعات بیشتر درباره ما ، به قسمت درباره ما بروید
+	</text>
+	
+	
+	<footer action="">
+		صفحه اصلی
+	</footer>
+</page>
+{{end}}

@@ -1,0 +1,22 @@
+{{define "search"}}
+<page>
+	<searchHeader placeholder="یک واژه یا عبارت بنویسید ..." action="search/"></searchHeader>
+	{{if .status}}
+		{{if gt .result.NumFound 0}}
+			{{range .result.Results}}
+				<card>	
+					<image style="normal" src="https://inline.zibaei.net/vajehyab.png"/>	
+					<text>{{.Title}} - <small>{{.Source}}</small></text>
+					<text>{{.Text}}</text>		
+				</card>
+			{{end}}
+		{{else}}
+			<text>موردی یافت نشد</text>
+		{{end}}
+	{{end}}
+	
+	<footer action="">
+		صفحه اصلی
+	</footer>
+</page>
+{{end}}
