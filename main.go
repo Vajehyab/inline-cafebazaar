@@ -44,6 +44,10 @@ var routes = Routes{
 		"/search/{query}",
 		searchHeaderHandler,
 	},
+	Route{
+		"/history/{query}",
+		searchHistoryHandler,
+	},
 }
 
 func helpHandler(w http.ResponseWriter, r *http.Request) {
@@ -66,9 +70,31 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(render("error", nil))
 		return
 	}
+
+	if len(Payload.Word) > 0 {
+		addToDatabase(r.FormValue("deviceID"), Payload.Word)
+	}
+
 	w.Write(render("search", map[string]interface{}{
 		"result": result.Data,
 		"status": true,
+		"list":   getList(r, Payload.Word),
+	}))
+}
+
+func searchHistoryHandler(w http.ResponseWriter, r *http.Request) {
+	query := mux.Vars(r)["query"]
+
+	result, err := sendRequest(query)
+	if err != nil {
+		w.Write(render("error", nil))
+		return
+	}
+
+	w.Write(render("search", map[string]interface{}{
+		"result": result.Data,
+		"status": true,
+		"list":   getList(r, query),
 	}))
 }
 
@@ -81,9 +107,15 @@ func searchHeaderHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(query) > 0 {
+		r.ParseForm()
+		addToDatabase(r.FormValue("deviceID"), query)
+	}
+
 	w.Write(render("search", map[string]interface{}{
 		"result": result.Data,
 		"status": true,
+		"list":   getList(r, query),
 	}))
 }
 
@@ -91,7 +123,13 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(render("index", nil))
 }
 
+func notFoundHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write(render("index", nil))
+}
+
 func main() {
+	log.Println("Starting ...")
+
 	router := mux.NewRouter().StrictSlash(false)
 	for _, route := range routes {
 		router.
@@ -99,6 +137,8 @@ func main() {
 			Path(route.Pattern).
 			Handler(route.HandlerFunc)
 	}
+
+	router.NotFoundHandler = http.HandlerFunc(notFoundHandler)
 
 	file, err := os.OpenFile(LOG_FILE, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
@@ -111,4 +151,18 @@ func main() {
 		Addr:    fmt.Sprintf("0.0.0.0:%d", PORT_NUMBER),
 	}
 	log.Fatal(srv.ListenAndServe())
+}
+
+func addToDatabase(deviceID string, q string) {
+	tmp := &query{
+		DeviceID: deviceID,
+		Query:    q,
+	}
+	tmp.Save()
+}
+
+func getList(r *http.Request, q string) []query {
+	r.ParseForm()
+	deviceID := r.FormValue("deviceID")
+	return getQueries(deviceID, 2, q)
 }

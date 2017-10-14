@@ -5,7 +5,7 @@
 	<theme background="#424242" text="#ffffff" primary="#212121"/>
 	<image style="normal" src="https://vajehyab.zibaei.net/static/inline-logo.png"/>	
 	<text>
-	این برنامه به صورت یک برنامه آنی توسط کافه بازار ارایه شده است
+	این برنامه با استفاده از بستر برنامه آنی کافه بازار طراحی شده است
 	</text>
 	<divider />
 	<text>
@@ -15,8 +15,13 @@
 	</text>
 	
 	
-	<footer action="">
-		صفحه اصلی
+	<footer>
+		<primaryAction action="@exit">
+			خروج
+		</primaryAction>
+		<secondaryAction action="">
+			صفحه اصلی
+		</secondaryAction>
 	</footer>
 </page>
 {{end}}

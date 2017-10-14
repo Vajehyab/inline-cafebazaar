@@ -15,8 +15,25 @@
 		{{end}}
 	{{end}}
 	
-	<footer action="">
-		صفحه اصلی
+	{{if gt (.list | len) 0}}
+	<divider />
+	<text>شما جستجو کردید : </text>
+	{{range .list}}	
+		<card style="small" action="/history/{{.Query}}">
+			<image style="normal" src="https://vajehyab.zibaei.net/static/vajehyab.png"/>
+			<text style="quoted">{{.Query}}</text>			
+		</card>
+	{{end}}
+	<divider />
+	{{end}}	
+	
+	<footer>
+		<primaryAction action="@exit">
+			خروج
+		</primaryAction>
+		<secondaryAction action="">
+			صفحه اصلی
+		</secondaryAction>
 	</footer>
 </page>
 {{end}}
