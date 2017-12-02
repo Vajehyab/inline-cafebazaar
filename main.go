@@ -48,11 +48,16 @@ func settingHandler(w http.ResponseWriter, r *http.Request) {
 	user := &User{}
 	user.DeviceID = r.FormValue("deviceId")
 	user.Get()
-	user.CheckEmptyDictionary()
+	log.Println("user", user.DeviceID, r.RequestURI)
+
+	if user.ID == 0 {
+		user.SetDictionary(user.GetAllDictionaries())
+		user.Create()
+	}
 
 	m := make(map[string]bool)
 	input := r.FormValue("payload")
-	if len(input) > 20 {
+	if len(input) > 25 {
 		input = strings.Replace(input, `"permittedData":{},`, "", -1)
 		json.Unmarshal([]byte(input), &m)
 		user.SetDictionary(m)
@@ -89,9 +94,14 @@ func searchHeaderHandler(w http.ResponseWriter, r *http.Request) {
 	user := &User{}
 	user.DeviceID = r.FormValue("deviceId")
 	user.Get()
+	log.Println("user", user.DeviceID, r.RequestURI)
 
-	user.CheckEmptyDictionary()
-	user.Save() // re-new updated_at field.
+	if user.ID == 0 {
+		user.SetDictionary(user.GetAllDictionaries())
+		user.Create()
+	} else {
+		user.Save()
+	}
 
 	result, err := sendRequest(query, user.EncodeDictionary())
 	if err != nil {
@@ -116,11 +126,11 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	user.Get()
 
 	if user.ID == 0 {
+		user.SetDictionary(user.GetAllDictionaries())
 		user.Create()
+	} else {
+		user.Save()
 	}
-
-	user.CheckEmptyDictionary()
-	user.Save() // re-new updated_at field.
 
 	data := make(map[string]interface{})
 	data["user"] = user
