@@ -82,7 +82,15 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	user := &User{}
 	user.DeviceID = r.FormValue("deviceID")
 	user.Get()
+
 	log.Println("user", user.DeviceID, r.RequestURI)
+
+	if user.ID == 0 {
+		user.SetDictionary(user.GetAllDictionaries())
+		user.Create()
+	} else {
+		user.Save()
+	}
 
 	result, err := sendRequest(Payload.Word, user.EncodeDictionary())
 	if err != nil {
