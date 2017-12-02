@@ -79,7 +79,26 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	json.Unmarshal([]byte(payload), &Payload)
 
-	http.Redirect(w, r, "/search/"+Payload.Word, http.StatusFound)
+	user := &User{}
+	user.DeviceID = r.FormValue("deviceID")
+	user.Get()
+	log.Println("user", user.DeviceID, r.RequestURI)
+
+	result, err := sendRequest(Payload.Word, user.EncodeDictionary())
+	if err != nil {
+		w.Write(render("error", nil))
+		return
+	}
+
+	dbQuery := &Query{}
+	dbQuery.Query = Payload.Word
+	dbQuery.DeviceID = user.DeviceID
+	dbQuery.Save()
+
+	w.Write(render("search", map[string]interface{}{
+		"result": result.Data,
+		"status": true,
+	}))
 }
 
 func searchHeaderHandler(w http.ResponseWriter, r *http.Request) {
