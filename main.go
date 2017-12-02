@@ -62,7 +62,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	json.Unmarshal([]byte(payload), &Payload)
 
-	http.Redirect(w, r, "/search/"+Payload.Word, http.StatusMovedPermanently)
+	http.Redirect(w, r, "/search/"+Payload.Word, http.StatusFound)
 }
 
 func searchHeaderHandler(w http.ResponseWriter, r *http.Request) {

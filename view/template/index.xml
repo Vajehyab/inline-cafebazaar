@@ -3,7 +3,7 @@
 	<theme background="#FFFFFF" text="#222222" primary="#389c34"/>
 	<image style="normal" src="https://www.vajehyab.com/img/inline-logo.png"/>
 	<edittext style="primary" field="word" prefill="application" placeholder="یک واژه یا عبارت بنویسید ..." />	
-	<button style="primary" action="index/search/">جستجو کن</button>	
+	<button style="primary" action="index/search/">جست‌وجو کن</button>	
 
 	<footer>
 		<primaryAction action="/setting">
