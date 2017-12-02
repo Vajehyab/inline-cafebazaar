@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
@@ -59,6 +60,36 @@ func (u *User) Save() {
 	database.Model(u).Save(u)
 }
 
+func (u *User) CheckEmptyDictionary() {
+	m := make(map[string]bool)
+
+	m["amid"] = true
+	m["moein"] = true
+	m["motaradef"] = true
+	m["farhangestan"] = true
+	m["sareh"] = true
+	m["ganjvajeh"] = true
+	m["slang"] = true
+	m["name"] = true
+	m["quran"] = true
+	m["wiki"] = true
+	m["thesis"] = true
+
+	m["fa2en"] = true
+	m["en2fa"] = true
+	m["ar2fa"] = true
+	m["fa2ar"] = true
+
+	m["isfahani"] = true
+	m["tehrani"] = true
+	m["dezfuli"] = true
+	m["bakhtiari"] = true
+	m["gonabadi"] = true
+	m["mazani"] = true
+
+	u.SetDictionary(m)
+}
+
 func (u *User) Create() {
 	database.Model(u).Create(u)
 }
@@ -70,7 +101,10 @@ func (u *User) GetDictionary() map[string]bool {
 }
 
 func (u *User) SetDictionary(input map[string]bool) {
-	bytes, _ := json.Marshal(input)
+	bytes, err := json.Marshal(input)
+	if err != nil {
+		log.Println("Error on set dictionary", err)
+	}
 	u.Dictionary = string(bytes)
 }
 
