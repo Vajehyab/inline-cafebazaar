@@ -103,9 +103,10 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if user.ID == 0 {
 		// user not found
 		// creating new user
-		user.CheckEmptyDictionary()
 		user.Create()
 	}
+
+	user.CheckEmptyDictionary()
 
 	data := make(map[string]interface{})
 	data["user"] = user

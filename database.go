@@ -61,33 +61,36 @@ func (u *User) Save() {
 }
 
 func (u *User) CheckEmptyDictionary() {
-	m := make(map[string]bool)
+	if u.Dictionary == "" {
+		m := make(map[string]bool)
 
-	m["amid"] = true
-	m["moein"] = true
-	m["motaradef"] = true
-	m["farhangestan"] = true
-	m["sareh"] = true
-	m["ganjvajeh"] = true
-	m["slang"] = true
-	m["name"] = true
-	m["quran"] = true
-	m["wiki"] = true
-	m["thesis"] = true
+		m["amid"] = true
+		m["moein"] = true
+		m["motaradef"] = true
+		m["farhangestan"] = true
+		m["sareh"] = true
+		m["ganjvajeh"] = true
+		m["slang"] = true
+		m["name"] = true
+		m["quran"] = true
+		m["wiki"] = true
+		m["thesis"] = true
 
-	m["fa2en"] = true
-	m["en2fa"] = true
-	m["ar2fa"] = true
-	m["fa2ar"] = true
+		m["fa2en"] = true
+		m["en2fa"] = true
+		m["ar2fa"] = true
+		m["fa2ar"] = true
 
-	m["isfahani"] = true
-	m["tehrani"] = true
-	m["dezfuli"] = true
-	m["bakhtiari"] = true
-	m["gonabadi"] = true
-	m["mazani"] = true
+		m["isfahani"] = true
+		m["tehrani"] = true
+		m["dezfuli"] = true
+		m["bakhtiari"] = true
+		m["gonabadi"] = true
+		m["mazani"] = true
 
-	u.SetDictionary(m)
+		u.SetDictionary(m)
+		u.Save()
+	}
 }
 
 func (u *User) Create() {
