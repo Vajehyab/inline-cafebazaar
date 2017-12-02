@@ -48,6 +48,7 @@ func settingHandler(w http.ResponseWriter, r *http.Request) {
 	user := &User{}
 	user.DeviceID = r.FormValue("deviceId")
 	user.Get()
+	user.CheckEmptyDictionary()
 
 	m := make(map[string]bool)
 	input := r.FormValue("payload")
@@ -55,8 +56,6 @@ func settingHandler(w http.ResponseWriter, r *http.Request) {
 		input = strings.Replace(input, `"permittedData":{},`, "", -1)
 		json.Unmarshal([]byte(input), &m)
 		user.SetDictionary(m)
-	} else {
-		user.CheckEmptyDictionary()
 	}
 
 	user.Save() // re-new updated_at field.

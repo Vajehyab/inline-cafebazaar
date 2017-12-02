@@ -4,7 +4,7 @@
 	<divider style="empty" />
 	<text><big><b>تنظیمات برنامه</b></big></text>
 	<divider style="empty" />
-	<text>لغت‌نامه های مورد نیاز را انتخاب کنید و در انتها کلید ثبت را فشار دهید</text>	
+	<text>لغت‌نامه های مورد نیاز را انتخاب کنید و در انتها کلید ثبت را فشار دهید.</text>	
 	<checkbox field="amid" value='{{index .dictionary "amid"}}'>فرهنگ فارسی عمید</checkbox>
 	<checkbox field="moein" value='{{index .dictionary "moein"}}'>فرهنگ فارسی معین</checkbox>
 	<checkbox field="motaradef" value='{{index .dictionary "motaradef"}}'>واژگان مترادف و متضاد</checkbox>
