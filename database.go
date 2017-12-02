@@ -47,7 +47,7 @@ func (u *User) EncodeDictionary() string {
 	m := u.GetDictionary()
 	for key, value := range m {
 		if value {
-			output += key
+			output += key + ","
 		}
 	}
 	output = output[:len(output)-1]

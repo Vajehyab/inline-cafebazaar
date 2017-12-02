@@ -29,10 +29,6 @@ var routes = Routes{
 		indexHandler,
 	},
 	Route{
-		"/more",
-		moreHandler,
-	},
-	Route{
 		"/setting",
 		settingHandler,
 	},
@@ -47,11 +43,15 @@ var routes = Routes{
 }
 
 func settingHandler(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	user := &User{}
+	user.DeviceID = r.FormValue("deviceId")
+	user.Get()
 
-}
-
-func moreHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write(render("more", nil))
+	data := make(map[string]interface{})
+	data["user"] = user
+	data["dictionary"] = user.GetDictionary()
+	w.Write(render("index", data))
 }
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {
