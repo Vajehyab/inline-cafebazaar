@@ -48,13 +48,15 @@ func settingHandler(w http.ResponseWriter, r *http.Request) {
 	user.DeviceID = r.FormValue("deviceId")
 	user.Get()
 
+	log.Println(r.FormValue("payload"))
+
 	user.CheckEmptyDictionary()
 	user.Save() // re-new updated_at field.
 
 	data := make(map[string]interface{})
 	data["user"] = user
 	data["dictionary"] = user.GetDictionary()
-	w.Write(render("index", data))
+	w.Write(render("setting", data))
 }
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {
@@ -145,5 +147,6 @@ func main() {
 		Handler: handlers.LoggingHandler(file, router),
 		Addr:    fmt.Sprintf("0.0.0.0:%d", PORT_NUMBER),
 	}
+	log.Println("Running on", srv.Addr)
 	log.Fatal(srv.ListenAndServe())
 }

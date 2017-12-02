@@ -1,33 +1,33 @@
-
+{{define "setting"}}
 <page gravity="top">
 	<theme background="#ffffff" text="#222222" primary="#389c34"/>
 	<divider style="empty" />
 	<text><big><b>تنظیمات برنامه</b></big></text>
 	<divider style="empty" />
-	<text>لغت‌نامه های مورد نیاز را انتخاب کنید و در انتها کلید ثبت را فشار دهید</text>
-	<checkbox field="amid" value="true">فرهنگ فارسی عمید</checkbox>
-	<checkbox field="moein" value="true">فرهنگ فارسی معین</checkbox>
-	<checkbox field="motaradef" value="true">واژگان مترادف و متضاد</checkbox>
-	<checkbox field="farhangestan" value="true">واژه های مصوب فرهنگستان</checkbox>
-	<checkbox field="sareh" value="true">واژه های فارسی سره</checkbox>
-	<checkbox field="ganjvajeh" value="true">فرهنگ گنجواژه</checkbox>
-	<checkbox field="slang" value="true">اصطلاحات عامیانه</checkbox>
-	<checkbox field="name" value="true">فرهنگ نام ها</checkbox>
-	<checkbox field="quran" value="true">فرهنگ واژگان قرآن</checkbox>
-	<checkbox field="wiki" value="true">واژه‌نامه آزاد</checkbox>
-	<checkbox field="thesis" value="true">فرهنگ لغات علمی</checkbox>
+	<text>لغت‌نامه های مورد نیاز را انتخاب کنید و در انتها کلید ثبت را فشار دهید</text>	
+	<checkbox field="amid" value='{{index .dictionary "amid"}}'>فرهنگ فارسی عمید</checkbox>
+	<checkbox field="moein" value='{{index .dictionary "moein"}}'>فرهنگ فارسی معین</checkbox>
+	<checkbox field="motaradef" value='{{index .dictionary "motaradef"}}'>واژگان مترادف و متضاد</checkbox>
+	<checkbox field="farhangestan" value='{{index .dictionary "farhangestan"}}'>واژه های مصوب فرهنگستان</checkbox>
+	<checkbox field="sareh" value='{{index .dictionary "sareh"}}'>واژه های فارسی سره</checkbox>
+	<checkbox field="ganjvajeh" value='{{index .dictionary "ganjvajeh"}}'>فرهنگ گنجواژه</checkbox>
+	<checkbox field="slang" value='{{index .dictionary "slang"}}'>اصطلاحات عامیانه</checkbox>
+	<checkbox field="name" value='{{index .dictionary "name"}}'>فرهنگ نام ها</checkbox>
+	<checkbox field="quran" value='{{index .dictionary "quran"}}'>فرهنگ واژگان قرآن</checkbox>
+	<checkbox field="wiki" value='{{index .dictionary "wiki"}}'>واژه‌نامه آزاد</checkbox>
+	<checkbox field="thesis" value='{{index .dictionary "thesis"}}'>فرهنگ لغات علمی</checkbox>
 	<divider />
-	<checkbox field="fa2en" value="true">دیکشنری فارسی به انگلیسی</checkbox>
-	<checkbox field="en2fa" value="true">دیکشنری انگلیسی به فارسی</checkbox>
-	<checkbox field="fa2ar" value="true">دیکشنری فارسی به عربی</checkbox>
-	<checkbox field="ar2fa" value="true">دیکشنری عربی به فارسی</checkbox>
+	<checkbox field="fa2en" value='{{index .dictionary "fa2en"}}'>دیکشنری فارسی به انگلیسی</checkbox>
+	<checkbox field="en2fa" value='{{index .dictionary "en2fa"}}'>دیکشنری انگلیسی به فارسی</checkbox>
+	<checkbox field="fa2ar" value='{{index .dictionary "fa2ar"}}'>دیکشنری فارسی به عربی</checkbox>
+	<checkbox field="ar2fa" value='{{index .dictionary "ar2fa"}}'>دیکشنری عربی به فارسی</checkbox>
 	<divider />
-	<checkbox field="isfahani" value="true">لهجه و گوشی اصفهانی</checkbox>
-	<checkbox field="bakhtiari" value="true">لهجه و گوشی بختیاری</checkbox>
-	<checkbox field="tehrani" value="true">لهجه و گوشی تهرانی</checkbox>
-	<checkbox field="dezfuli" value="true">لهجه و گوشی دزفولی</checkbox>
-	<checkbox field="gonabadi" value="true">لهجه و گوشی گنابادی</checkbox>
-	<checkbox field="mazani" value="true">لهجه و گوشی مازنی</checkbox>
+	<checkbox field="isfahani" value='{{index .dictionary "isfahani"}}'>لهجه و گوشی اصفهانی</checkbox>
+	<checkbox field="bakhtiari" value='{{index .dictionary "bakhtiari"}}'>لهجه و گوشی بختیاری</checkbox>
+	<checkbox field="tehrani" value='{{index .dictionary "tehrani"}}'>لهجه و گوشی تهرانی</checkbox>
+	<checkbox field="dezfuli" value='{{index .dictionary "dezfuli"}}'>لهجه و گوشی دزفولی</checkbox>
+	<checkbox field="gonabadi" value='{{index .dictionary "gonabadi"}}'>لهجه و گوشی گنابادی</checkbox>
+	<checkbox field="mazani" value='{{index .dictionary "mazani"}}'>لهجه و گوشی مازنی</checkbox>	
 	<divider style="empty"/>
 	<button action="/setting">ثبت تنظیمات</button>
 	<divider style="empty"/>
@@ -40,3 +40,4 @@
 		</secondaryAction>
 	</footer>
 </page>
+{{end}}
