@@ -29,12 +29,12 @@ var routes = Routes{
 		indexHandler,
 	},
 	Route{
-		"/help/aboutus",
-		aboutHandler,
+		"/more",
+		moreHandler,
 	},
 	Route{
-		"/help/more",
-		helpHandler,
+		"/setting",
+		settingHandler,
 	},
 	Route{
 		"/index/search/",
@@ -44,18 +44,14 @@ var routes = Routes{
 		"/search/{query}",
 		searchHeaderHandler,
 	},
-	Route{
-		"/history/{query}",
-		searchHistoryHandler,
-	},
 }
 
-func helpHandler(w http.ResponseWriter, r *http.Request) {
+func settingHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func moreHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(render("more", nil))
-}
-
-func aboutHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write(render("about", nil))
 }
 
 func searchHandler(w http.ResponseWriter, r *http.Request) {
@@ -65,62 +61,82 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		Word string `json:"word"`
 	}
 	json.Unmarshal([]byte(payload), &Payload)
-	result, err := sendRequest(Payload.Word)
-	if err != nil {
-		w.Write(render("error", nil))
-		return
-	}
 
-	if len(Payload.Word) > 0 {
-		addToDatabase(r.FormValue("deviceID"), Payload.Word)
-	}
-
-	w.Write(render("search", map[string]interface{}{
-		"result": result.Data,
-		"status": true,
-		"list":   getList(r, Payload.Word),
-	}))
-}
-
-func searchHistoryHandler(w http.ResponseWriter, r *http.Request) {
-	query := mux.Vars(r)["query"]
-
-	result, err := sendRequest(query)
-	if err != nil {
-		w.Write(render("error", nil))
-		return
-	}
-
-	w.Write(render("search", map[string]interface{}{
-		"result": result.Data,
-		"status": true,
-		"list":   getList(r, query),
-	}))
+	http.Redirect(w, r, "/search/"+Payload.Word, http.StatusMovedPermanently)
 }
 
 func searchHeaderHandler(w http.ResponseWriter, r *http.Request) {
-	query := mux.Vars(r)["query"]
+	r.ParseForm()
 
-	result, err := sendRequest(query)
+	query := mux.Vars(r)["query"]
+	if query == "" {
+		http.Redirect(w, r, "/", http.StatusMovedPermanently)
+		return
+	}
+
+	user := &User{}
+	user.DeviceID = r.FormValue("deviceId")
+	user.Get()
+
+	result, err := sendRequest(query, user.EncodeDictionary())
 	if err != nil {
 		w.Write(render("error", nil))
 		return
 	}
 
-	if len(query) > 0 {
-		r.ParseForm()
-		addToDatabase(r.FormValue("deviceID"), query)
-	}
+	dbQuery := &Query{}
+	dbQuery.Query = query
+	dbQuery.DeviceID = user.DeviceID
+	dbQuery.Save()
 
 	w.Write(render("search", map[string]interface{}{
 		"result": result.Data,
 		"status": true,
-		"list":   getList(r, query),
 	}))
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write(render("index", nil))
+	user := &User{}
+	user.DeviceID = r.FormValue("deviceID")
+	user.Get()
+
+	if user.ID == 0 {
+		// user not found
+		// creating new user
+
+		m := make(map[string]bool)
+
+		m["amid"] = true
+		m["moein"] = true
+		m["motaradef"] = true
+		m["farhangestan"] = true
+		m["sareh"] = true
+		m["ganjvajeh"] = true
+		m["slang"] = true
+		m["name"] = true
+		m["quran"] = true
+		m["wiki"] = true
+		m["thesis"] = true
+
+		m["fa2en"] = true
+		m["en2fa"] = true
+		m["ar2fa"] = true
+		m["fa2ar"] = true
+
+		m["isfahani"] = true
+		m["tehrani"] = true
+		m["dezfuli"] = true
+		m["bakhtiari"] = true
+		m["gonabadi"] = true
+		m["mazani"] = true
+
+		user.SetDictionary(m)
+		user.Create()
+	}
+
+	data := make(map[string]interface{})
+	data["user"] = user
+	w.Write(render("index", data))
 }
 
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {
@@ -133,7 +149,7 @@ func main() {
 	router := mux.NewRouter().StrictSlash(false)
 	for _, route := range routes {
 		router.
-			Methods("POST").
+			Methods("GET", "POST").
 			Path(route.Pattern).
 			Handler(route.HandlerFunc)
 	}
@@ -151,18 +167,4 @@ func main() {
 		Addr:    fmt.Sprintf("0.0.0.0:%d", PORT_NUMBER),
 	}
 	log.Fatal(srv.ListenAndServe())
-}
-
-func addToDatabase(deviceID string, q string) {
-	tmp := &query{
-		DeviceID: deviceID,
-		Query:    q,
-	}
-	tmp.Save()
-}
-
-func getList(r *http.Request, q string) []query {
-	r.ParseForm()
-	deviceID := r.FormValue("deviceID")
-	return getQueries(deviceID, 2, q)
 }

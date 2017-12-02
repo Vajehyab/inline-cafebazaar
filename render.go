@@ -10,10 +10,11 @@ import (
 
 var bufpool *bpool.BufferPool
 var templates *template.Template
+var funcMap = make(template.FuncMap)
 
 func init() {
 	bufpool = bpool.NewBufferPool(128)
-	templates = template.New("")
+	templates = template.New("").Funcs(funcMap)
 	filepath.Walk("view/template", func(path string, info os.FileInfo, err error) error {
 		templates.ParseFiles(path)
 		return nil

@@ -1,15 +1,15 @@
 {{define "index"}}
 <page gravity="center">
-	<theme background="#424242" text="#ffffff" primary="#212121"/>
-	<image style="normal" src="https://vajehyab.zibaei.net/static/vajehyab.png"/>
-	<edittext style="primary" field="word" placeholder="یک واژه یا عبارت بنویسید ..." />	
+	<theme background="#FFFFFF" text="#222222" primary="#389c34"/>
+	<image style="normal" src="https://www.vajehyab.com/img/inline-logo.png"/>
+	<edittext style="primary" field="word" prefill="application" placeholder="یک واژه یا عبارت بنویسید ..." />	
 	<button style="primary" action="index/search/">جستجو کن</button>	
 
 	<footer>
-		<primaryAction action="help/aboutus">
-			درباره ما
+		<primaryAction action="/setting">
+			تنظیمات
 		</primaryAction>
-		<secondaryAction action="help/more">
+		<secondaryAction action="/help/more">
 			بیشتر بدانید
 		</secondaryAction>
 	</footer>

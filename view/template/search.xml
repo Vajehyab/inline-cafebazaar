@@ -1,31 +1,32 @@
 {{define "search"}}
 <page>
+	<theme background="#FFFFFF" text="#222222" primary="#389c34"/>
 	<searchHeader placeholder="یک واژه یا عبارت بنویسید ..." action="search/"></searchHeader>
 	{{if .status}}
 		{{if gt .result.NumFound 0}}
 			{{range .result.Results}}
-				<card>	
-					<image style="normal" src="https://vajehyab.zibaei.net/static/vajehyab.png"/>	
-					<text>{{.Title}} - <small>{{.Source}}</small></text>
-					<text>{{.Text}}</text>		
-				</card>
+			<text><big><b>{{.Title}}</b></big>  <small><font color="#aaaaaa">{{.Source}}</font></small>
+			<br/>
+			{{.Text}}
+			</text>
+			<divider />
 			{{end}}
 		{{else}}
 			<text>موردی یافت نشد</text>
 		{{end}}
 	{{end}}
-	
-	{{if gt (.list | len) 0}}
-	<divider />
-	<text>شما جستجو کردید : </text>
-	{{range .list}}	
-		<card style="small" action="/history/{{.Query}}">
-			<image style="normal" src="https://vajehyab.zibaei.net/static/vajehyab.png"/>
-			<text style="quoted">{{.Query}}</text>			
-		</card>
-	{{end}}
-	<divider />
-	{{end}}	
+
+	<dualbuttons>
+		<button action="share: سیب را در واژه یاب ببین !
+		http://www.vajehyab.com/?q=سیب
+		
+		برنامه آنی واژه یاب
+		https://cafebazaar.ir/app/com.vajehyab.inline
+		">اشتراک گذاری</button>
+		<button action="web: http://www.vajehyab.com/?q=سیب">مشاهده در سایت</button>
+	</dualbuttons>
+
+	<divider style="empty"/>
 	
 	<footer>
 		<primaryAction action="@exit">

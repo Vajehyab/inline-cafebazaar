@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	TOKEN    = "YOUR_TOKEN_HERE"
+	TOKEN    = "50758.QF5ZUPBRq2MlH3doOBcVV6IcPV8JiQW8w27qSIii"
 	BASE_URL = "http://api.vajehyab.com/v3"
 )
 
@@ -36,12 +36,12 @@ type VajehyabResponse struct {
 	} `json:"data"`
 }
 
-func sendRequest(search string) (VajehyabResponse, error) {
+func sendRequest(search, dictionaries string) (VajehyabResponse, error) {
 	result := VajehyabResponse{}
 
 	client := &http.Client{}
 
-	query := fmt.Sprintf("%s/search?token=%s&q=%s&type=exact&filter=moein,amid,motaradef,farhangestan,sareh,ganjvajeh,slang,wiki,fa2en,en2fa,ar2fa,fa2ar,name,quran,thesis", BASE_URL, TOKEN, search)
+	query := fmt.Sprintf("%s/search?token=%s&q=%s&type=exact&filter=%s", BASE_URL, TOKEN, search, dictionaries)
 	req, err := http.NewRequest("GET", query, nil)
 
 	if err != nil {

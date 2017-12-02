@@ -1,0 +1,18 @@
+{
+    "version": "0.1.0",
+    "command": "bash",
+    "isShellCommand": true,
+    "showOutput": "always",
+    "args": [
+        "-c"
+    ],
+    "tasks": [{
+        "taskName": "build",
+        "suppressTaskName": true,
+        "isBuildCommand": true,
+        "args": [
+            "go build -i -o ./inline-vajehyab && ./inline-vajehyab"
+        ],
+        "problemMatcher": []
+    }]
+}
