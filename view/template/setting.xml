@@ -35,7 +35,7 @@
 		<primaryAction action="@back" clearFields="true">
 			بازگشت
 		</primaryAction>
-		<secondaryAction action="/">
+		<secondaryAction action="/" clearFields="true">
 			صفحه اول
 		</secondaryAction>
 	</footer>

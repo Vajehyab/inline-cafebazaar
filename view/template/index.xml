@@ -6,7 +6,7 @@
 	<button style="primary" action="index/search/">جست‌وجو کن</button>	
 
 	<footer>
-		<primaryAction action="/setting">
+		<primaryAction action="/setting" clearFields="true">
 			تنظیمات
 		</primaryAction>
 		<secondaryAction action="web: https://www.vajehyab.com/about">
