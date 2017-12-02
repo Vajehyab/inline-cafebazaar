@@ -46,7 +46,7 @@ var routes = Routes{
 func settingHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	user := &User{}
-	user.DeviceID = r.FormValue("deviceId")
+	user.DeviceID = r.FormValue("deviceID")
 	user.Get()
 	log.Println("user", user.DeviceID, r.RequestURI)
 
@@ -92,7 +92,7 @@ func searchHeaderHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user := &User{}
-	user.DeviceID = r.FormValue("deviceId")
+	user.DeviceID = r.FormValue("deviceID")
 	user.Get()
 	log.Println("user", user.DeviceID, r.RequestURI)
 
