@@ -106,6 +106,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(render("search", map[string]interface{}{
 		"result": result.Data,
 		"status": true,
+		"query":  Payload.Word,
 	}))
 }
 
@@ -144,6 +145,7 @@ func searchHeaderHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(render("search", map[string]interface{}{
 		"result": result.Data,
 		"status": true,
+		"query":  query,
 	}))
 }
 

@@ -17,13 +17,13 @@
 	{{end}}
 
 	<dualbuttons>
-		<button action="share: سیب را در واژه یاب ببین !
-		http://www.vajehyab.com/?q=سیب
+		<button action="share: {{.query}} را در واژه یاب ببین !
+		http://www.vajehyab.com/?q={{.query}}
 		
 		برنامه آنی واژه یاب
 		https://cafebazaar.ir/app/com.vajehyab.inline
 		">اشتراک گذاری</button>
-		<button action="web: http://www.vajehyab.com/?q=سیب">مشاهده در سایت</button>
+		<button action="web: http://www.vajehyab.com/?q={{.query}}">مشاهده در سایت</button>
 	</dualbuttons>
 
 	<divider style="empty"/>

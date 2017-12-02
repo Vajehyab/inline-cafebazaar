@@ -35,9 +35,6 @@
 		<primaryAction action="@back" clearFields="true">
 			بازگشت
 		</primaryAction>
-		<secondaryAction action="/" clearFields="true">
-			صفحه اول
-		</secondaryAction>
 	</footer>
 </page>
 {{end}}
