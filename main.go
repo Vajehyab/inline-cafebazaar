@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -48,9 +49,16 @@ func settingHandler(w http.ResponseWriter, r *http.Request) {
 	user.DeviceID = r.FormValue("deviceId")
 	user.Get()
 
-	log.Println(r.FormValue("payload"))
+	m := make(map[string]bool)
+	input := r.FormValue("payload")
+	if len(input) > 20 {
+		input = strings.Replace(input, `"permittedData":{}`, "", -1)
+		json.Unmarshal([]byte(input), m)
+		user.SetDictionary(m)
+	} else {
+		user.CheckEmptyDictionary()
+	}
 
-	user.CheckEmptyDictionary()
 	user.Save() // re-new updated_at field.
 
 	data := make(map[string]interface{})

@@ -32,7 +32,7 @@
 	<button action="/setting">ثبت تنظیمات</button>
 	<divider style="empty"/>
 	<footer>
-		<primaryAction action="@back">
+		<primaryAction action="@back" clearFields="true">
 			بازگشت
 		</primaryAction>
 		<secondaryAction action="/">
