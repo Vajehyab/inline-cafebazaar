@@ -60,7 +60,7 @@ func (u *User) Save() {
 	database.Model(u).Save(u)
 }
 
-func (u *User) CheckEmptyDictionary() {
+func (u *User) CheckEmptyDictionary() bool {
 	if u.Dictionary == "" {
 		m := make(map[string]bool)
 
@@ -89,8 +89,9 @@ func (u *User) CheckEmptyDictionary() {
 		m["mazani"] = true
 
 		u.SetDictionary(m)
-		u.Save()
+		return true
 	}
+	return false
 }
 
 func (u *User) Create() {

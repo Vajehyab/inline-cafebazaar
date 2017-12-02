@@ -48,6 +48,9 @@ func settingHandler(w http.ResponseWriter, r *http.Request) {
 	user.DeviceID = r.FormValue("deviceId")
 	user.Get()
 
+	user.CheckEmptyDictionary()
+	user.Save() // re-new updated_at field.
+
 	data := make(map[string]interface{})
 	data["user"] = user
 	data["dictionary"] = user.GetDictionary()
@@ -78,6 +81,9 @@ func searchHeaderHandler(w http.ResponseWriter, r *http.Request) {
 	user.DeviceID = r.FormValue("deviceId")
 	user.Get()
 
+	user.CheckEmptyDictionary()
+	user.Save() // re-new updated_at field.
+
 	result, err := sendRequest(query, user.EncodeDictionary())
 	if err != nil {
 		w.Write(render("error", nil))
@@ -101,12 +107,11 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	user.Get()
 
 	if user.ID == 0 {
-		// user not found
-		// creating new user
 		user.Create()
 	}
 
 	user.CheckEmptyDictionary()
+	user.Save() // re-new updated_at field.
 
 	data := make(map[string]interface{})
 	data["user"] = user
