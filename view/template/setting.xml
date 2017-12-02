@@ -22,12 +22,12 @@
 	<checkbox field="fa2ar" value='{{index .dictionary "fa2ar"}}'>دیکشنری فارسی به عربی</checkbox>
 	<checkbox field="ar2fa" value='{{index .dictionary "ar2fa"}}'>دیکشنری عربی به فارسی</checkbox>
 	<divider />
-	<checkbox field="isfahani" value='{{index .dictionary "isfahani"}}'>لهجه و گوشی اصفهانی</checkbox>
-	<checkbox field="bakhtiari" value='{{index .dictionary "bakhtiari"}}'>لهجه و گوشی بختیاری</checkbox>
-	<checkbox field="tehrani" value='{{index .dictionary "tehrani"}}'>لهجه و گوشی تهرانی</checkbox>
-	<checkbox field="dezfuli" value='{{index .dictionary "dezfuli"}}'>لهجه و گوشی دزفولی</checkbox>
-	<checkbox field="gonabadi" value='{{index .dictionary "gonabadi"}}'>لهجه و گوشی گنابادی</checkbox>
-	<checkbox field="mazani" value='{{index .dictionary "mazani"}}'>لهجه و گوشی مازنی</checkbox>	
+	<checkbox field="isfahani" value='{{index .dictionary "isfahani"}}'>لهجه و گویش اصفهانی</checkbox>
+	<checkbox field="bakhtiari" value='{{index .dictionary "bakhtiari"}}'>لهجه و گویش بختیاری</checkbox>
+	<checkbox field="tehrani" value='{{index .dictionary "tehrani"}}'>لهجه و گویش تهرانی</checkbox>
+	<checkbox field="dezfuli" value='{{index .dictionary "dezfuli"}}'>لهجه و گویش دزفولی</checkbox>
+	<checkbox field="gonabadi" value='{{index .dictionary "gonabadi"}}'>لهجه و گویش گنابادی</checkbox>
+	<checkbox field="mazani" value='{{index .dictionary "mazani"}}'>لهجه و گویش مازنی</checkbox>	
 	<divider style="empty"/>
 	<button action="/setting">ثبت تنظیمات</button>
 	<divider style="empty"/>

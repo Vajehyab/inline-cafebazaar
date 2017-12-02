@@ -57,7 +57,7 @@ func settingHandler(w http.ResponseWriter, r *http.Request) {
 
 	m := make(map[string]bool)
 	input := r.FormValue("payload")
-	if len(input) > 25 {
+	if len(input) > 60 {
 		input = strings.Replace(input, `"permittedData":{},`, "", -1)
 		json.Unmarshal([]byte(input), &m)
 		user.SetDictionary(m)
