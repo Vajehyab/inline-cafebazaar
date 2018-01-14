@@ -17,7 +17,7 @@
 	{{end}}
 
 	<dualbuttons>
-		<button action="share: {{.query}} را در واژه یاب ببین !
+		<button action="share: در واژه یاب ببین !
 		http://www.vajehyab.com/?q={{.query}}
 		
 		برنامه آنی واژه یاب

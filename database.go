@@ -12,6 +12,30 @@ var (
 	database   *gorm.DB
 	queryModel = new(Query)
 	userModel  = new(User)
+
+	keys = []string{
+		"sareh",
+		"ganjvajeh",
+		"slang",
+		"fa2en",
+		"en2fa",
+		"ar2fa",
+		"dezfuli",
+		"farhangestan",
+		"thesis",
+		"fa2ar",
+		"isfahani",
+		"tehrani",
+		"wiki",
+		"motaradef",
+		"quran",
+		"bakhtiari",
+		"moein",
+		"name",
+		"gonabadi",
+		"mazani",
+		"amid",
+	}
 )
 
 func init() {
@@ -46,8 +70,8 @@ func (u *User) EncodeDictionary() string {
 	output := ""
 
 	m := u.GetDictionary()
-	for key, value := range m {
-		if value {
+	for _, key := range keys {
+		if m[key] {
 			output += key + ","
 		}
 	}

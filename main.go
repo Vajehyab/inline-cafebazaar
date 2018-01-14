@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,11 +11,6 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-)
-
-const (
-	LOG_FILE    = "requests.log"
-	PORT_NUMBER = 7890
 )
 
 type Route struct {
@@ -48,7 +44,6 @@ func settingHandler(w http.ResponseWriter, r *http.Request) {
 	user := &User{}
 	user.DeviceID = r.FormValue("deviceID")
 	user.Get()
-	log.Println("user", user.DeviceID, r.RequestURI)
 
 	if user.ID == 0 {
 		user.SetDictionary(user.GetAllDictionaries())
@@ -82,8 +77,6 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	user := &User{}
 	user.DeviceID = r.FormValue("deviceID")
 	user.Get()
-
-	log.Println("user", user.DeviceID, r.RequestURI)
 
 	if user.ID == 0 {
 		user.SetDictionary(user.GetAllDictionaries())
@@ -122,7 +115,6 @@ func searchHeaderHandler(w http.ResponseWriter, r *http.Request) {
 	user := &User{}
 	user.DeviceID = r.FormValue("deviceID")
 	user.Get()
-	log.Println("user", user.DeviceID, r.RequestURI)
 
 	if user.ID == 0 {
 		user.SetDictionary(user.GetAllDictionaries())
@@ -171,6 +163,10 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	logFilePtr := flag.String("log", "requests.log", "log file for requests")
+	portNumberPtr := flag.Int("port", 9989, "http port")
+	flag.Parse()
+
 	log.Println("Starting ...")
 
 	router := mux.NewRouter().StrictSlash(false)
@@ -183,7 +179,7 @@ func main() {
 
 	router.NotFoundHandler = http.HandlerFunc(notFoundHandler)
 
-	file, err := os.OpenFile(LOG_FILE, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	file, err := os.OpenFile(*logFilePtr, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalln("Failed to open log file", err)
 	}
@@ -191,7 +187,7 @@ func main() {
 
 	srv := &http.Server{
 		Handler: handlers.LoggingHandler(file, router),
-		Addr:    fmt.Sprintf("0.0.0.0:%d", PORT_NUMBER),
+		Addr:    fmt.Sprintf("0.0.0.0:%d", *portNumberPtr),
 	}
 	log.Println("Running on", srv.Addr)
 	log.Fatal(srv.ListenAndServe())

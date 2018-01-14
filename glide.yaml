@@ -1,0 +1,8 @@
+package: .
+import:
+- package: github.com/gorilla/handlers
+- package: github.com/gorilla/mux
+- package: github.com/jinzhu/gorm
+  subpackages:
+  - dialects/sqlite
+- package: github.com/oxtoacart/bpool
