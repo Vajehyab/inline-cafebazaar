@@ -14,7 +14,19 @@
 		{{else}}
 			<text>موردی یافت نشد</text>
 		{{end}}
-	{{end}}
+
+		{{if gt (len .suggestion) 0}}
+			<text style="centered"><b>کلمات پیشنهادی و مشابه</b></text>
+			{{range .suggestion}}
+				<card style="small" action="/search/{{.Title}}">
+					<image src="https://www.vajehyab.com/img/inline-logo-gray.png"/>
+					<text><small><font color="#389c34">{{.Title}} - {{.Source}}</font></small></text>
+					<text>{{.Result}}</text>
+				</card>				
+			{{end}}
+			<divider />
+		{{end}}
+	{{end}}	
 
 	<dualbuttons>
 		<button action="share: در واژه یاب ببین !

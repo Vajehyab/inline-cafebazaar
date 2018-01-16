@@ -13,6 +13,12 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type Suggestion struct {
+	Title  string
+	Result string
+	Source string
+}
+
 type Route struct {
 	Pattern     string
 	HandlerFunc http.HandlerFunc
@@ -91,15 +97,48 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	suggestions := make([]Suggestion, 0)
+
+	suggestion, err := getSuggestions(Payload.Word)
+	if err != nil {
+		w.Write(render("error", nil))
+		return
+	}
+
+	for _, v := range suggestion.Data.Suggestion {
+		if len(suggestions) > 2 {
+			break
+		}
+		resp, err := sendRequest(v, user.EncodeDictionary())
+		if err != nil {
+			w.Write(render("error", nil))
+			return
+		}
+		if resp.Data.NumFound > 0 {
+			s := Suggestion{}
+
+			if resp.Data.Results[0].Title == Payload.Word {
+				continue
+			}
+
+			s.Title = resp.Data.Results[0].Title
+			s.Source = resp.Data.Results[0].Source
+			s.Result = resp.Data.Results[0].Text
+
+			suggestions = append(suggestions, s)
+		}
+	}
+
 	dbQuery := &Query{}
 	dbQuery.Query = Payload.Word
 	dbQuery.DeviceID = user.DeviceID
 	dbQuery.Save()
 
 	w.Write(render("search", map[string]interface{}{
-		"result": result.Data,
-		"status": true,
-		"query":  Payload.Word,
+		"result":     result.Data,
+		"status":     true,
+		"query":      Payload.Word,
+		"suggestion": suggestions,
 	}))
 }
 
@@ -129,15 +168,48 @@ func searchHeaderHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	suggestions := make([]Suggestion, 0)
+
+	suggestion, err := getSuggestions(query)
+	if err != nil {
+		w.Write(render("error", nil))
+		return
+	}
+
+	for _, v := range suggestion.Data.Suggestion {
+		if len(suggestions) > 2 {
+			break
+		}
+		resp, err := sendRequest(v, user.EncodeDictionary())
+		if err != nil {
+			w.Write(render("error", nil))
+			return
+		}
+		if resp.Data.NumFound > 0 {
+
+			if resp.Data.Results[0].Title == query {
+				continue
+			}
+
+			s := Suggestion{}
+			s.Title = resp.Data.Results[0].Title
+			s.Source = resp.Data.Results[0].Source
+			s.Result = resp.Data.Results[0].Text
+
+			suggestions = append(suggestions, s)
+		}
+	}
+
 	dbQuery := &Query{}
 	dbQuery.Query = query
 	dbQuery.DeviceID = user.DeviceID
 	dbQuery.Save()
 
 	w.Write(render("search", map[string]interface{}{
-		"result": result.Data,
-		"status": true,
-		"query":  query,
+		"result":     result.Data,
+		"status":     true,
+		"query":      query,
+		"suggestion": suggestions,
 	}))
 }
 
