@@ -5,7 +5,7 @@
 	<edittext style="primary" field="word" prefill="application" placeholder="یک واژه یا عبارت بنویسید ..." />	
 	<button style="primary" action="index/search/">جست‌وجو کن</button>	
 	<divider style="empty"/>
-	<small><font color="#389c34">در صورت تمایل ، پس از استفاده از برنامه ، به ما رای دهید</font></small>
+	<text><small><font color="#389c34">در صورت تمایل ، پس از استفاده از برنامه ، به ما رای دهید</font></small></text>
 	
 	<footer>
 		<primaryAction action="/setting" clearFields="true">
