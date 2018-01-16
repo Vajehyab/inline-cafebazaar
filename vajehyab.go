@@ -8,8 +8,7 @@ import (
 )
 
 const (
-	// TOKEN = "50758.QF5ZUPBRq2MlH3doOBcVV6IcPV8JiQW8w27qSIii"
-	TOKEN = "50758.DtUOJsqB4dBIxhfnJWGfYRbjHKXV3LrGfmvZOVAS"
+	TOKEN = "50758.QF5ZUPBRq2MlH3doOBcVV6IcPV8JiQW8w27qSIii"
 
 	// BASE_URL is API URL for vajehyab.
 	// You can use "mina" before sending request to vajehyab.com
