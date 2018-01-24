@@ -1,12 +1,12 @@
 hash: 8f220501748fc0b190bfe0d87131b41323245ebe2cf851276347a46baf2de447
-updated: 2018-01-15T00:24:56.873902564+03:30
+updated: 2018-01-24T17:50:52.339913219+03:30
 imports:
 - name: github.com/gorilla/context
   version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
 - name: github.com/gorilla/handlers
   version: 90663712d74cb411cbef281bc1e08c19d1a76145
 - name: github.com/gorilla/mux
-  version: 5bbbb5b2b5729b132181cc7f4aa3b3c973e9a0ed
+  version: c0091a029979286890368b4c7b301261e448e242
 - name: github.com/jinzhu/gorm
   version: 0a51f6cdc55d1650d9ed3b4c13026cfa9133b01e
   subpackages:
@@ -14,7 +14,7 @@ imports:
 - name: github.com/jinzhu/inflection
   version: 1c35d901db3da928c72a72d8458480cc9ade058f
 - name: github.com/mattn/go-sqlite3
-  version: 6c771bb9887719704b210e87e934f08be014bdb1
+  version: 9bdd5428f7d3754cbda0efab73be02be36e921ed
 - name: github.com/oxtoacart/bpool
   version: 4e1c5567d7c2dd59fa4c7c83d34c2f3528b025d6
 testImports: []

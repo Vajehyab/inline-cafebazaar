@@ -6,10 +6,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 
-	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
@@ -51,11 +49,6 @@ func settingHandler(w http.ResponseWriter, r *http.Request) {
 	user.DeviceID = r.FormValue("deviceID")
 	user.Get()
 
-	if user.ID == 0 {
-		user.SetDictionary(user.GetAllDictionaries())
-		user.Create()
-	}
-
 	m := make(map[string]bool)
 	input := r.FormValue("payload")
 	if len(input) > 60 {
@@ -72,95 +65,10 @@ func settingHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(render("setting", data))
 }
 
-func searchHandler(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	payload := r.FormValue("payload")
-	var Payload struct {
-		Word string `json:"word"`
-	}
-	json.Unmarshal([]byte(payload), &Payload)
-
+func doSearch(w http.ResponseWriter, query, deviceID string) {
 	user := &User{}
-	user.DeviceID = r.FormValue("deviceID")
+	user.DeviceID = deviceID
 	user.Get()
-
-	if user.ID == 0 {
-		user.SetDictionary(user.GetAllDictionaries())
-		user.Create()
-	} else {
-		user.Save()
-	}
-
-	result, err := sendRequest(Payload.Word, user.EncodeDictionary())
-	if err != nil {
-		w.Write(render("error", nil))
-		return
-	}
-
-	suggestions := make([]Suggestion, 0)
-
-	suggestion, err := getSuggestions(Payload.Word)
-	if err != nil {
-		w.Write(render("error", nil))
-		return
-	}
-
-	for _, v := range suggestion.Data.Suggestion {
-		if len(suggestions) > 2 {
-			break
-		}
-		resp, err := sendRequest(v, user.EncodeDictionary())
-		if err != nil {
-			w.Write(render("error", nil))
-			return
-		}
-		if resp.Data.NumFound > 0 {
-			s := Suggestion{}
-
-			if resp.Data.Results[0].Title == Payload.Word {
-				continue
-			}
-
-			s.Title = resp.Data.Results[0].Title
-			s.Source = resp.Data.Results[0].Source
-			s.Result = resp.Data.Results[0].Text
-
-			suggestions = append(suggestions, s)
-		}
-	}
-
-	dbQuery := &Query{}
-	dbQuery.Query = Payload.Word
-	dbQuery.DeviceID = user.DeviceID
-	dbQuery.Save()
-
-	w.Write(render("search", map[string]interface{}{
-		"result":     result.Data,
-		"status":     true,
-		"query":      Payload.Word,
-		"suggestion": suggestions,
-	}))
-}
-
-func searchHeaderHandler(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-
-	query := mux.Vars(r)["query"]
-	if query == "" {
-		http.Redirect(w, r, "/", http.StatusMovedPermanently)
-		return
-	}
-
-	user := &User{}
-	user.DeviceID = r.FormValue("deviceID")
-	user.Get()
-
-	if user.ID == 0 {
-		user.SetDictionary(user.GetAllDictionaries())
-		user.Create()
-	} else {
-		user.Save()
-	}
 
 	result, err := sendRequest(query, user.EncodeDictionary())
 	if err != nil {
@@ -186,12 +94,12 @@ func searchHeaderHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if resp.Data.NumFound > 0 {
+			s := Suggestion{}
 
 			if resp.Data.Results[0].Title == query {
 				continue
 			}
 
-			s := Suggestion{}
 			s.Title = resp.Data.Results[0].Title
 			s.Source = resp.Data.Results[0].Source
 			s.Result = resp.Data.Results[0].Text
@@ -203,7 +111,9 @@ func searchHeaderHandler(w http.ResponseWriter, r *http.Request) {
 	dbQuery := &Query{}
 	dbQuery.Query = query
 	dbQuery.DeviceID = user.DeviceID
-	dbQuery.Save()
+	dbQuery.Create()
+
+	user.Save()
 
 	w.Write(render("search", map[string]interface{}{
 		"result":     result.Data,
@@ -211,6 +121,30 @@ func searchHeaderHandler(w http.ResponseWriter, r *http.Request) {
 		"query":      query,
 		"suggestion": suggestions,
 	}))
+}
+
+func searchHandler(w http.ResponseWriter, r *http.Request) {
+	payload := r.FormValue("payload")
+	var Payload struct {
+		Word string `json:"word"`
+	}
+	json.Unmarshal([]byte(payload), &Payload)
+
+	deviceID := r.FormValue("deviceID")
+
+	doSearch(w, Payload.Word, deviceID)
+}
+
+func searchHeaderHandler(w http.ResponseWriter, r *http.Request) {
+	query := mux.Vars(r)["query"]
+	if query == "" {
+		http.Redirect(w, r, "/", http.StatusMovedPermanently)
+		return
+	}
+
+	deviceID := r.FormValue("deviceID")
+
+	doSearch(w, query, deviceID)
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -235,8 +169,7 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	logFilePtr := flag.String("log", "requests.log", "log file for requests")
-	portNumberPtr := flag.Int("port", 9989, "http port")
+	portNumberPtr := flag.Int("port", 7789, "http port")
 	flag.Parse()
 
 	log.Println("Starting ...")
@@ -251,14 +184,8 @@ func main() {
 
 	router.NotFoundHandler = http.HandlerFunc(notFoundHandler)
 
-	file, err := os.OpenFile(*logFilePtr, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil {
-		log.Fatalln("Failed to open log file", err)
-	}
-	defer file.Close()
-
 	srv := &http.Server{
-		Handler: handlers.LoggingHandler(file, router),
+		Handler: router,
 		Addr:    fmt.Sprintf("0.0.0.0:%d", *portNumberPtr),
 	}
 	log.Println("Running on", srv.Addr)

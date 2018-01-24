@@ -4,7 +4,7 @@
 	<image style="normal" src="https://www.vajehyab.com/img/inline-logo.png"/>
 	<edittext style="primary" field="word" prefill="application" placeholder="یک واژه یا عبارت بنویسید ..." />	
 	<button style="primary" action="index/search/">جست‌وجو کن</button>		
-	<text style="centered"><small><font color="#285CB8">در صورت تمایل ، پس از استفاده از برنامه ، به ما رای دهید</font></small></text>
+	<text style="centered"><small><font color="#009EE1">در صورت تمایل ، پس از استفاده از برنامه ، به ما رای دهید</font></small></text>
 	
 	<footer>
 		<primaryAction action="/setting" clearFields="true">
