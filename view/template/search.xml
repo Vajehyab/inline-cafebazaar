@@ -18,7 +18,7 @@
 		{{if gt (len .suggestion) 0}}
 			<text style="centered"><b>کلمات پیشنهادی و مشابه</b></text>
 			{{range .suggestion}}
-				<card style="small" action="/search/{{.Title}}">
+				<card style="small">
 					<image src="https://www.vajehyab.com/img/inline-logo-gray.png"/>
 					<text><font color="#389c34"><b>{{.Title}}</b></font> <font color="#50bf4a"><small>{{.Source}}</small></font></text>
 					<text> {{.Result}}</text>
