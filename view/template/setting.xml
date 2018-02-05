@@ -1,4 +1,3 @@
-{{define "setting"}}
 <page gravity="top">
 	<theme background="#ffffff" text="#222222" primary="#389c34"/>
 	<divider style="empty" />
@@ -37,4 +36,3 @@
 		</primaryAction>
 	</footer>
 </page>
-{{end}}

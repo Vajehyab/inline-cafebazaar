@@ -25,6 +25,11 @@ type (
 		Query    string
 		DeviceID string
 	}
+	Suggestion struct {
+		Title  string
+		Result string
+		Source string
+	}
 )
 
 var (
@@ -76,7 +81,7 @@ func main() {
 }
 
 func doSearch(ctx iris.Context, deviceID, query string) {
-	dictionary := map[string]interface{}{}
+	dictionary := map[string]bool{}
 
 	err := db.Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket(toBytes(deviceID))
@@ -86,9 +91,9 @@ func doSearch(ctx iris.Context, deviceID, query string) {
 			return err
 		}
 
-		dic := bucket.Get(toBytes("dictionary"))
-		if json.Unmarshal(dic, &dictionary) != nil {
-			return fmt.Errorf("json error")
+		dic := bucket.Get(toBytes("settings"))
+		if err = gobDecoder(dic, &dictionary); err != nil {
+			return fmt.Errorf("gob error %s", err.Error())
 		}
 
 		return nil
@@ -97,6 +102,51 @@ func doSearch(ctx iris.Context, deviceID, query string) {
 		ctx.Redirect("/error/?err=" + err.Error())
 		return
 	}
+
+	encodedDictionary := encodeDictionary(dictionary)
+
+	result, err := getWord(query, encodedDictionary)
+	if err != nil {
+		ctx.Redirect("/error?err=" + err.Error())
+		return
+	}
+
+	suggestions := make([]Suggestion, 0)
+
+	suggestion, err := getSuggestion(query)
+	if err != nil {
+		ctx.Redirect("/error?err=" + err.Error())
+		return
+	}
+
+	for _, v := range suggestion.Data.Suggestion {
+		if len(suggestions) > 2 {
+			break
+		}
+		resp, err := getWord(v, encodedDictionary)
+		if err != nil {
+			ctx.Redirect("/error?err=" + err.Error())
+			return
+		}
+		if resp.Data.NumFound > 0 {
+			s := Suggestion{}
+
+			if resp.Data.Results[0].Title == query {
+				continue
+			}
+
+			s.Title = resp.Data.Results[0].Title
+			s.Source = resp.Data.Results[0].Source
+			s.Result = resp.Data.Results[0].Text
+
+			suggestions = append(suggestions, s)
+		}
+	}
+
+	ctx.ViewData("result", result.Data)
+	ctx.ViewData("status", true)
+	ctx.ViewData("query", query)
+	ctx.ViewData("suggestion", suggestions)
 	ctx.View("search.xml")
 }
 
@@ -152,8 +202,8 @@ func settingHandler(ctx iris.Context) {
 			bucket.Put(toBytes("settings"), toBytes(input))
 
 			dictionary := map[string]interface{}{}
-			if json.Unmarshal(toBytes(input), &dictionary) != nil {
-				return fmt.Errorf("json error")
+			if gobDecoder(toBytes(input), &dictionary) != nil {
+				return fmt.Errorf("gob error %s", err.Error())
 			}
 			ctx.ViewData("dictionary", dictionary)
 		}
@@ -216,4 +266,11 @@ func toBytes(a interface{}) []byte {
 		enc.Encode(a)
 		return buf.Bytes()
 	}
+}
+
+func gobDecoder(a []byte, output interface{}) error {
+	buf := new(bytes.Buffer)
+	buf.Write(a)
+	enc := gob.NewDecoder(buf)
+	return enc.Decode(output)
 }

@@ -1,4 +1,3 @@
-{{define "search"}}
 <page gravity="top">
 	<theme background="#FFFFFF" text="#222222" primary="#389c34"/>
 	<searchHeader placeholder="یک واژه یا عبارت بنویسید ..." action="search/"></searchHeader>
@@ -49,4 +48,3 @@
 		</secondaryAction>
 	</footer>
 </page>
-{{end}}

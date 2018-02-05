@@ -1,18 +1,16 @@
-{{define "error"}}
 <page gravity="center">
-	<theme background="#424242" text="#ffffff" primary="#212121"/>
-	<image style="normal" src="https://vajehyab.zibaei.net/static/vajehyab.png"/>
-	<text>خطایی رخ داده است</text>
-
-	<button style="primary" action="">صفحه اصلی</button>
+	<theme background="#FFFFFF" text="#222222" primary="#eeeeee"/>
+	<image style="normal" src="https://www.vajehyab.com/img/inline-logo.png"/>
 	
+	<text>خطایی رخ داده است</text>
+	<button style="primary" action="">صفحه اصلی</button>
+
 	<footer>
-		<primaryAction action="help/aboutus">
-			درباره ما
+		<primaryAction action="/setting" clearFields="true">
+			تنظیمات
 		</primaryAction>
-		<secondaryAction action="help/more">
-			بیشتر بدانید
+		<secondaryAction action="web: https://www.vajehyab.com/about">
+			درباره ما
 		</secondaryAction>
 	</footer>
 </page>
-{{end}}
