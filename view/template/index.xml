@@ -1,4 +1,3 @@
-{{define "index"}}
 <page gravity="center">
 	<theme background="#FFFFFF" text="#222222" primary="#eeeeee"/>
 	<image style="normal" src="https://www.vajehyab.com/img/inline-logo.png"/>
@@ -15,4 +14,3 @@
 		</secondaryAction>
 	</footer>
 </page>
-{{end}}

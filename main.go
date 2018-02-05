@@ -1,193 +1,219 @@
 package main
 
 import (
+	"bytes"
+	"encoding/binary"
+	"encoding/gob"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"log"
-	"net/http"
 	"strings"
+	"time"
 
-	"github.com/gorilla/mux"
+	"github.com/boltdb/bolt"
+	"github.com/kataras/iris"
 )
 
-type Suggestion struct {
-	Title  string
-	Result string
-	Source string
-}
+const (
+	DATABASE_FILE = "database.bolt"
+	LISTEN_PORT   = 8080
+)
 
-type Route struct {
-	Pattern     string
-	HandlerFunc http.HandlerFunc
-}
+type (
+	Search struct {
+		Context  iris.Context
+		Query    string
+		DeviceID string
+	}
+)
 
-type Routes []Route
-
-var routes = Routes{
-	Route{
-		"/",
-		indexHandler,
-	},
-	Route{
-		"/setting",
-		settingHandler,
-	},
-	Route{
-		"/index/search/",
-		searchHandler,
-	},
-	Route{
-		"/search/{query}",
-		searchHeaderHandler,
-	},
-}
-
-func settingHandler(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	user := &User{}
-	user.DeviceID = r.FormValue("deviceID")
-	user.Get()
-
-	m := make(map[string]bool)
-	input := r.FormValue("payload")
-	if len(input) > 60 {
-		input = strings.Replace(input, `"permittedData":{},`, "", -1)
-		json.Unmarshal([]byte(input), &m)
-		user.SetDictionary(m)
+var (
+	keys = []string{
+		"sareh",
+		"ganjvajeh",
+		"slang",
+		"fa2en",
+		"en2fa",
+		"ar2fa",
+		"dezfuli",
+		"farhangestan",
+		"thesis",
+		"fa2ar",
+		"isfahani",
+		"tehrani",
+		"wiki",
+		"motaradef",
+		"quran",
+		"bakhtiari",
+		"moein",
+		"name",
+		"gonabadi",
+		"mazani",
+		"amid",
 	}
 
-	user.Save() // re-new updated_at field.
-
-	data := make(map[string]interface{})
-	data["user"] = user
-	data["dictionary"] = user.GetDictionary()
-	w.Write(render("setting", data))
-}
-
-func doSearch(w http.ResponseWriter, query, deviceID string) {
-	user := &User{}
-	user.DeviceID = deviceID
-	user.Get()
-
-	result, err := sendRequest(query, user.EncodeDictionary())
-	if err != nil {
-		w.Write(render("error", nil))
-		return
-	}
-
-	suggestions := make([]Suggestion, 0)
-
-	suggestion, err := getSuggestions(query)
-	if err != nil {
-		w.Write(render("error", nil))
-		return
-	}
-
-	for _, v := range suggestion.Data.Suggestion {
-		if len(suggestions) > 2 {
-			break
-		}
-		resp, err := sendRequest(v, user.EncodeDictionary())
-		if err != nil {
-			w.Write(render("error", nil))
-			return
-		}
-		if resp.Data.NumFound > 0 {
-			s := Suggestion{}
-
-			if resp.Data.Results[0].Title == query {
-				continue
-			}
-
-			s.Title = resp.Data.Results[0].Title
-			s.Source = resp.Data.Results[0].Source
-			s.Result = resp.Data.Results[0].Text
-
-			suggestions = append(suggestions, s)
-		}
-	}
-
-	dbQuery := &Query{}
-	dbQuery.Query = query
-	dbQuery.DeviceID = user.DeviceID
-	dbQuery.Create()
-
-	user.Save()
-
-	w.Write(render("search", map[string]interface{}{
-		"result":     result.Data,
-		"status":     true,
-		"query":      query,
-		"suggestion": suggestions,
-	}))
-}
-
-func searchHandler(w http.ResponseWriter, r *http.Request) {
-	payload := r.FormValue("payload")
-	var Payload struct {
-		Word string `json:"word"`
-	}
-	json.Unmarshal([]byte(payload), &Payload)
-
-	deviceID := r.FormValue("deviceID")
-
-	doSearch(w, Payload.Word, deviceID)
-}
-
-func searchHeaderHandler(w http.ResponseWriter, r *http.Request) {
-	query := mux.Vars(r)["query"]
-	if query == "" {
-		http.Redirect(w, r, "/", http.StatusMovedPermanently)
-		return
-	}
-
-	deviceID := r.FormValue("deviceID")
-
-	doSearch(w, query, deviceID)
-}
-
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	user := &User{}
-	user.DeviceID = r.FormValue("deviceID")
-	user.Get()
-
-	if user.ID == 0 {
-		user.SetDictionary(user.GetAllDictionaries())
-		user.Create()
-	} else {
-		user.Save()
-	}
-
-	data := make(map[string]interface{})
-	data["user"] = user
-	w.Write(render("index", data))
-}
-
-func notFoundHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write(render("index", nil))
-}
+	db = new(bolt.DB)
+)
 
 func main() {
-	portNumberPtr := flag.Int("port", 7789, "http port")
-	flag.Parse()
+	var err error
+	db, err = bolt.Open(DATABASE_FILE, 0600, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
 
-	log.Println("Starting ...")
+	app := iris.New()
+	app.RegisterView(iris.HTML("./view/template", ".xml"))
 
-	router := mux.NewRouter().StrictSlash(false)
-	for _, route := range routes {
-		router.
-			Methods("GET", "POST").
-			Path(route.Pattern).
-			Handler(route.HandlerFunc)
+	app.HandleMany("GET POST", "/", indexHandler)
+	app.HandleMany("GET POST", "/setting", settingHandler)
+	app.HandleMany("GET POST", "/index/search", searchHandler)
+	app.HandleMany("GET POST", "/search/{query}", searchHeaderHandler)
+	app.HandleMany("GET POST", "/error/", errorHandler)
+
+	app.Run(iris.Addr(fmt.Sprintf(":%d", LISTEN_PORT)), iris.WithoutServerError(iris.ErrServerClosed))
+}
+
+func doSearch(ctx iris.Context, deviceID, query string) {
+	dictionary := map[string]interface{}{}
+
+	err := db.Update(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket(toBytes(deviceID))
+
+		err := bucket.Put(toBytes("last_used"), toBytes(time.Now()))
+		if err != nil {
+			return err
+		}
+
+		dic := bucket.Get(toBytes("dictionary"))
+		if json.Unmarshal(dic, &dictionary) != nil {
+			return fmt.Errorf("json error")
+		}
+
+		return nil
+	})
+	if err != nil {
+		ctx.Redirect("/error/?err=" + err.Error())
+		return
+	}
+	ctx.View("search.xml")
+}
+
+func errorHandler(ctx iris.Context) {
+	log.Println(ctx.FormValue("err"))
+	ctx.View("error.xml")
+}
+
+func searchHeaderHandler(ctx iris.Context) {
+	query := ctx.Params().Get("query")
+	deviceID := ctx.PostValue("deviceID")
+	if deviceID == "" {
+		// for GET method, we do not have PostValue.
+		deviceID = "unknown_user"
+	}
+	doSearch(ctx, deviceID, query)
+}
+
+func searchHandler(ctx iris.Context) {
+	var payload struct {
+		Word string `json:"word"`
+	}
+	json.Unmarshal([]byte(ctx.PostValue("payload")), &payload)
+
+	deviceID := ctx.PostValue("deviceID")
+	if deviceID == "" {
+		// for GET method, we do not have PostValue.
+		deviceID = "unknown_user"
 	}
 
-	router.NotFoundHandler = http.HandlerFunc(notFoundHandler)
+	doSearch(ctx, deviceID, payload.Word)
+}
 
-	srv := &http.Server{
-		Handler: router,
-		Addr:    fmt.Sprintf("0.0.0.0:%d", *portNumberPtr),
+func settingHandler(ctx iris.Context) {
+	deviceID := ctx.PostValue("deviceID")
+	if deviceID == "" {
+		// for GET method, we do not have PostValue.
+		deviceID = "unknown_user"
 	}
-	log.Println("Running on", srv.Addr)
-	log.Fatal(srv.ListenAndServe())
+
+	err := db.Update(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket(toBytes(deviceID))
+
+		err := bucket.Put(toBytes("last_used"), toBytes(time.Now()))
+		if err != nil {
+			return err
+		}
+
+		input := ctx.PostValue("payload")
+		if len(input) > 60 {
+			// payload is not for empty POST data.
+			input = strings.Replace(input, `"permittedData":{},`, "", -1)
+			bucket.Put(toBytes("settings"), toBytes(input))
+
+			dictionary := map[string]interface{}{}
+			if json.Unmarshal(toBytes(input), &dictionary) != nil {
+				return fmt.Errorf("json error")
+			}
+			ctx.ViewData("dictionary", dictionary)
+		}
+		return nil
+	})
+	if err != nil {
+		ctx.Redirect("/error/?err=" + err.Error())
+		return
+	}
+	ctx.View("setting.xml")
+}
+
+func indexHandler(ctx iris.Context) {
+	deviceID := ctx.PostValue("deviceID")
+	if deviceID == "" {
+		// for GET method, we do not have PostValue.
+		deviceID = "unknown_user"
+	}
+
+	err := db.Update(func(tx *bolt.Tx) error {
+		bucket, err := tx.CreateBucketIfNotExists(toBytes(deviceID))
+		if err != nil {
+			return err
+		}
+
+		err = bucket.Put(toBytes("last_used"), toBytes(time.Now()))
+		if err != nil {
+			return err
+		}
+
+		dictionaries := make(map[string]bool)
+		for _, key := range keys {
+			dictionaries[key] = true
+		}
+
+		err = bucket.Put(toBytes("settings"), toBytes(dictionaries))
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		ctx.Redirect("/error/?err=" + err.Error())
+		return
+	}
+	ctx.View("index.xml")
+}
+
+func toBytes(a interface{}) []byte {
+	switch value := a.(type) {
+	case string:
+		return []byte(value)
+	case int64:
+		buf := make([]byte, binary.MaxVarintLen64)
+		n := binary.PutVarint(buf, value)
+		return buf[:n]
+	default:
+		buf := new(bytes.Buffer)
+		enc := gob.NewEncoder(buf)
+		enc.Encode(a)
+		return buf.Bytes()
+	}
 }
